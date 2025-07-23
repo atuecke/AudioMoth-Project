@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "em_cmu.h": "c",
+        "em_usart.h": "c"
+    }
+}

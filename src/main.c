@@ -16,6 +16,7 @@
 #include "audiomoth.h"
 #include "audioconfig.h"
 #include "digitalfilter.h"
+#include "spi_dev.h"
 
 /* Useful time constants */
 
@@ -1577,6 +1578,9 @@ int main(void) {
     /* Initialise device */
 
     AudioMoth_initialise();
+
+    /* Bring up USART1 in SPI-slave mode on the Dev-board header */
+    SPIDEV_init();
 
     AM_switchPosition_t switchPosition = AudioMoth_getSwitchPosition();
 
@@ -3153,6 +3157,9 @@ static AM_recordingState_t makeRecording(uint32_t timeOfNextRecording, uint32_t 
                     if (buffersProcessed == 0) memcpy(buffers[readBuffer], &wavHeader, sizeof(wavHeader_t));
                         
                     FLASH_LED_AND_RETURN_ON_ERROR(AudioMoth_writeToFile(buffers[readBuffer], NUMBER_OF_BYTES_IN_SAMPLE * numberOfSamplesToWrite));
+
+                    // Every time we flush a 32 KiB page to SD, fire Hello-World SPI burst
+                    SPIDEV_sendHello();
 
                 } else {
 
